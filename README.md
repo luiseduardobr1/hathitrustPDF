@@ -16,3 +16,25 @@ If you're using [Jupyter Notebook](https://jupyter.org/) just type in cell to in
 ```
 
 # How to use it
+Copy Hathi Trust book URL and paste into "link" variable on code line:
+```python
+...
+link = "https://babel.hathitrust.org/cgi/pt?id=mdp.39015023320164"
+r  = requests.get(link)
+...
+```
+Be careful to keeping the same pattern presented (**numbers at the end**)! 
+
+After that, all pages will be downloaded as PDF files and merged in a single file named **MERGED_OUTPUT.pdf** in the corresponding folder. The pages are not *automatically* deleted after the end of the process! 
+
+# Slice pages
+The code allows you to remove only a specific number of pages from the site. For that purpose, just put the start and end page on code line:
+```python
+...
+# Download pdf file
+begin_page=1
+last_page=number_pages+1
+
+for actual_page in range(begin_page, last_page):
+...
+```
