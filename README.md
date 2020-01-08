@@ -38,3 +38,6 @@ last_page=number_pages+1
 for actual_page in range(begin_page, last_page):
 ...
 ```
+
+# Screenshot
+![captura-hait](https://user-images.githubusercontent.com/56649205/72007547-abc73680-3230-11ea-9e74-4e6e495c90d2.PNG)
