@@ -5,7 +5,6 @@ Download an entire book (or publication) in PDF file from Hathi Trust Digital Li
 Hathi Trust Digital Library is a wonderful site to find old publications digitized from different university libraries. However, it limits the download of full PDF files to only partner universities, which are mostly american. In this sense, this code attempts to democratize knowledge and permits to download complete public domain works (in PDF) from Hathi Trust website.
 
 # Requirements
-It's necessary the additional libraries:
 * [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/#installing-beautiful-soup) (bs4)
 * [Requests](https://realpython.com/python-requests/)
 * [PyPDF2](https://pythonhosted.org/PyPDF2/)
