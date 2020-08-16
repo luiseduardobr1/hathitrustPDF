@@ -8,6 +8,7 @@ Hathi Trust Digital Library is a good site to find old publications digitized fr
 * [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/#installing-beautiful-soup) (bs4)
 * [Requests](https://realpython.com/python-requests/)
 * [PyPDF2](https://pythonhosted.org/PyPDF2/)
+* [Progressbar](https://pypi.org/project/progressbar/)
 
 # How to use it
 Copy Hathi Trust book URL and paste into "link" variable on code line:
