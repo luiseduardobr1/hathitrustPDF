@@ -17,9 +17,9 @@ link = "https://babel.hathitrust.org/cgi/pt?id=mdp.39015023320164"
 r  = requests.get(link)
 ...
 ```
-Keep the same pattern presented (**numbers at the end**)! 
+OBS: Keep the same pattern presented (**numbers at the end**)! 
 
-After that, all pages will be downloaded as PDF files and merged in a single file named **MERGED_OUTPUT.pdf** in the corresponding folder. The individual pages are not *automatically* deleted after the end of the process! 
+After that, all pages will be downloaded as PDF files and merged in a single file named ```BOOKNAME_output.pdf``` in the corresponding folder. The individual pages are not deleted after the end of the process! 
 
 # Slice pages
 The code also allows you to remove only a range of pages. For that purpose, just edit the start and end page on code line:
@@ -27,7 +27,7 @@ The code also allows you to remove only a range of pages. For that purpose, just
 ...
 # Download pdf file
 begin_page=1
-last_page=number_pages+1
+last_page=pages_book+1
 
 for actual_page in range(begin_page, last_page):
 ...
