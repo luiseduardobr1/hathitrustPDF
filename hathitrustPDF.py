@@ -14,15 +14,16 @@ def PDFDownload(output_line):
 
 
 # Get hathitrust book link
-link = "https://babel.hathitrust.org/cgi/pt?id=uiug.30112106748004"
+link = "https://babel.hathitrust.org/cgi/pt?id=txu.059173023561817"
 id_book = re.findall('id=(\w*\.\d*)|$', link)[0]
 r = requests.get(link)
 soup = BeautifulSoup(r.text, "html.parser")
 
 # Number of the book pages and name
-pages_book = int(soup.find("span", {"data-slot": "total-seq"}).text)
+pages_book = int(soup.find("section", {'class': 'd--reader--viewer'})['data-total-seq'])
 name_book = soup.find('meta', {'property': 'og:title'})['content']
 
+# Limit book title
 if len(name_book) > 55:
     name_book = name_book[:40]
 
