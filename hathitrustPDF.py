@@ -202,6 +202,7 @@ def main():
                 key = input()
                 if key.lower() == "r":
                     # Recheck missing pages
+                    pdf_list = [os.path.join(path_folder, a) for a in ordered_files if a.endswith(".pdf")]
                     missing_pages = check_files_missing(begin_page, last_page, path_folder, pdf_list)
                     break
                 elif key == "":
