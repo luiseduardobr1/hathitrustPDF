@@ -195,7 +195,7 @@ def main():
         for page in missing_pages:
             print(f"Missing/corrupted page {page}. Download it manually at {base_link.format(id_book, page)}, and "
                   f"save it to {os.path.join(path_folder, f'page{page}.pdf')}.\n")
-        print("You have missing pages. Press enter to continue, R to recheck, or CTRL+C to exit.")
+        print("You have missing pages. Press enter to continue, R to recheck, D to redownload, or CTRL+C to exit.")
         try:
             # Wait for user input
             while True:
@@ -206,6 +206,11 @@ def main():
                     pdf_list = [os.path.join(path_folder, a) for a in ordered_files if a.endswith(".pdf")]
                     missing_pages = check_files_missing(begin_page, last_page, path_folder, pdf_list)
                     break
+                elif key =="d":
+                    # Try to download missing pages
+                    for i in missing_pages:
+                        downloader.download_file(base_link.format(id_book, i))
+
                 elif key == "":
                     # force continue, even with missing pages
                     missing_pages = []
