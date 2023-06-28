@@ -11,11 +11,13 @@ Hathi Trust Digital Library is a good site to find old publications digitized fr
   - https://babel.hathitrust.org/cgi/pt?id={bookID}
   - https://hdl.handle.net/XXXX/{bookID}
 - Book splicing, allowing to download only a part of the book.
+- Bulk download of multiple books.
 - Attempts to avoid Error 429 (Too Many Requests) from Hathi Trust.
   - If the error occurs, the thread will sleep for 5 seconds and try again.
   - Works in most cases, but not always.
 - Downloads are attempted 3 times before giving up.
-  - Users are notified of the failure, and have the option to manually download the missing pages for merge at the end.
+  - Users are notified of the failure, and have the option to redownload the missing pages for merge at the end.
+  - Retry attempt count is configurable via --retries option.
 
 # Requirements
 * [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/#installing-beautiful-soup) (bs4)
@@ -26,17 +28,20 @@ Hathi Trust Digital Library is a good site to find old publications digitized fr
 # Usage
 
 ```
-usage: hathitrustPDF.py [-h] [-t THREAD_COUNT] [-b BEGIN] [-e END] [-k] [-o OUTPUT_PATH] [-v] [-V] link
+usage: hathitrustPDF.py [-h] [-l LINK] [-i INPUT_FILE] [-t THREAD_COUNT] [-r RETRIES] [-b BEGIN] [-e END] [-k]
+                        [-o OUTPUT_PATH] [-v] [-V]
 
 PDF Downloader and Merger
 
-positional arguments:
-  link                  HathiTrust book link
-
 options:
   -h, --help            show this help message and exit
+  -l LINK, --link LINK  HathiTrust book link
+  -i INPUT_FILE, --input-file INPUT_FILE
+                        File with list of links formatted as link,output_path
   -t THREAD_COUNT, --thread-count THREAD_COUNT
                         Number of download threads
+  -r RETRIES, --retries RETRIES
+                        Number of retries for failed downloads
   -b BEGIN, --begin BEGIN
                         First page to download
   -e END, --end END     Last page to download
