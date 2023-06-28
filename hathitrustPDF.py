@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 
 
 class Downloader:
-    def __init__(self, max_threads, to_download, bar_, path, verbose):
+    def __init__(self, max_threads, to_download, bar_, path, args):
         self.max_threads = max_threads
         self.download_threads = []
         self.finished_threads = []
@@ -21,7 +21,8 @@ class Downloader:
         self.bar = bar_
         self.lock = threading.Lock()
         self.path = path
-        self.verbose = verbose
+        self.retries = args.retries
+        self.verbose = args.verbose
 
     def download(self):
         def download_finished(thread_: DownloadThread):  # callback function
@@ -68,13 +69,13 @@ class Downloader:
         pdf_download = requests.get(link_, stream=True, timeout=300)
         if pdf_download.status_code != 200:
 
-            while retry_count < 3:
+            while retry_count < self.retries:
                 if pdf_download.status_code == 200:
                     break
                 retry_count += 1
                 if self.verbose:
                     print(f"Error downloading {link_}: Status code {pdf_download.status_code}. "
-                          f"Retrying...{retry_count}/3")
+                          f"Retrying...{retry_count}/{self.retries}")
                 if pdf_download.status_code == 429:
                     if self.verbose:
                         print("Too many requests. Waiting 5 seconds...")
@@ -127,6 +128,7 @@ def main():
     parser.add_argument('-l', '--link', help='HathiTrust book link')
     parser.add_argument('-i', '--input-file', default="", help='File with list of links formatted as link,output_path')
     parser.add_argument('-t', '--thread-count', type=int, default=5, help='Number of download threads')
+    parser.add_argument('-r', '--retries', type=int, default=3, help='Number of retries for failed downloads')
     parser.add_argument('-b', '--begin', type=int, default=1, help='First page to download')
     parser.add_argument('-e', '--end', type=int, default=0, help='Last page to download')
     parser.add_argument('-k', '--keep', action='store_true', help='Keep downloaded pages')
@@ -192,7 +194,7 @@ def download_link(args, link, output):
     links = [base_link.format(id_book, actual_page) for actual_page in range(begin_page, last_page)]
 
     downloader = Downloader(max_threads=args.thread_count, to_download=links, bar_=bar,
-                            path=path_folder, verbose=args.verbose)
+                            path=path_folder, args=args)
     downloader.download()
 
     # Sort by page number, trims "page" and ".pdf"
