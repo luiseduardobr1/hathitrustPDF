@@ -73,7 +73,8 @@ class Downloader:
                     break
                 retry_count += 1
                 if self.verbose:
-                    print(f"Error downloading {link_}: Status code {pdf_download.status_code}. Retrying...{retry_count}/3")
+                    print(f"Error downloading {link_}: Status code {pdf_download.status_code}. "
+                          f"Retrying...{retry_count}/3")
                 if pdf_download.status_code == 429:
                     if self.verbose:
                         print("Too many requests. Waiting 5 seconds...")
@@ -123,7 +124,8 @@ def check_files_missing(begin, end, path_folder, pdf_list):
 
 def main():
     parser = argparse.ArgumentParser(description='PDF Downloader and Merger')
-    parser.add_argument('link', help='HathiTrust book link')
+    parser.add_argument('-l', '--link', help='HathiTrust book link')
+    parser.add_argument('-i', '--input-file', default="", help='File with list of links formatted as link,output_path')
     parser.add_argument('-t', '--thread-count', type=int, default=5, help='Number of download threads')
     parser.add_argument('-b', '--begin', type=int, default=1, help='First page to download')
     parser.add_argument('-e', '--end', type=int, default=0, help='Last page to download')
@@ -131,19 +133,31 @@ def main():
     parser.add_argument('-o', '--output-path', default=None, help='Output file path')
     parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose mode')
     parser.add_argument('-V', '--version', action='version', version='%(prog)s 1.0')
-
+    #  todo: add -i option to take a file with a list of link:output
     args = parser.parse_args()
 
-    link = args.link
+    if not (args.link or args.input_file):
+        parser.print_help()
+        exit(1)
 
+    if args.input_file != "":
+        with open(args.input_file, 'r') as f:
+            links = dict(map(lambda x: x.split(','), f.readlines()))
+    else:
+        links = {args.link: args.output_path}
+    for link, output in links.items():
+        download_link(args, link, output.rstrip('\n'))
+
+
+def download_link(args, link, output):
     if "babel.hathitrust.org" in link:
         id_book = re.findall(r'id=(\w*\.\d*)|$', link)[0]
     elif "hdl.handle.net" in link:
         link.rstrip('/')
         id_book = re.findall(r'.+/(.+)', link)[0]
     else:
-        print("Unknown link format. Please use a link from babel.hathitrust.org or hdl.handle.net")
-        exit(1)
+        print(f"{link}: Unknown link format. Please use a link from babel.hathitrust.org or hdl.handle.net")
+        return
     r = requests.get(link)
     soup = BeautifulSoup(r.text, "html.parser")
 
@@ -157,8 +171,7 @@ def main():
 
     # Remove invalid characters
     remove_character = "[],/\\:.;\"'?!*"
-    name_book = name_book.translate(
-                str.maketrans(remove_character, len(remove_character)*" ")).strip()
+    name_book = name_book.translate(str.maketrans(remove_character, len(remove_character)*" ")).strip()
     if args.output_path is None:
         args.output_path = name_book + ".pdf"
     # Create a new folder
@@ -206,18 +219,22 @@ def main():
                     pdf_list = [os.path.join(path_folder, a) for a in ordered_files if a.endswith(".pdf")]
                     missing_pages = check_files_missing(begin_page, last_page, path_folder, pdf_list)
                     break
-                elif key =="d":
+                elif key.lower() == "d":
                     # Try to download missing pages
                     for i in missing_pages:
                         downloader.download_file(base_link.format(id_book, i))
+
+                    ordered_files = sorted(os.listdir(path_folder), key=lambda x: int(x[4:-4]))
+                    pdf_list = [os.path.join(path_folder, a) for a in ordered_files if a.endswith(".pdf")]
+                    missing_pages = check_files_missing(begin_page, last_page, path_folder, pdf_list)
+                    break
 
                 elif key == "":
                     # force continue, even with missing pages
                     missing_pages = []
                     break
         except KeyboardInterrupt:
-            print("Exiting...")
-            exit(1)
+            return
 
     merger = PdfMerger()
 
@@ -226,7 +243,7 @@ def main():
             merger.append(file)
 
     try:
-        with open(args.output_path, "wb") as fout:
+        with open(output, "wb") as fout:
             merger.write(fout)
     except Exception as e:
         print("Error writing merged file " + args.output_path)
@@ -248,10 +265,7 @@ def main():
 
     bar.finish()
     merger.close()
-    exit(0)
 
 
 if __name__ == '__main__':
     main()
-
-
