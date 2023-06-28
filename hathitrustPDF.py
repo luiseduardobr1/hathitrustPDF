@@ -68,7 +68,7 @@ class Downloader:
         pdf_download = requests.get(link_, stream=True, timeout=300)
         if pdf_download.status_code != 200:
 
-            while retry_count <= 3:
+            while retry_count < 3:
                 if pdf_download.status_code == 200:
                     break
                 retry_count += 1
