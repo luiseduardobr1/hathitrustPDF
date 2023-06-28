@@ -152,6 +152,7 @@ def main():
 
 
 def download_link(args, link, output):
+    start_time = time.time()
     if "babel.hathitrust.org" in link:
         id_book = re.findall(r'id=(\w*\.\d*)|$', link)[0]
     elif "hdl.handle.net" in link:
@@ -267,6 +268,7 @@ def download_link(args, link, output):
 
     bar.finish()
     merger.close()
+    print(f"Finished downloading {output}. Took {time.time() - start_time} seconds.")
 
 
 if __name__ == '__main__':
