@@ -3,7 +3,7 @@ import requests
 import re
 import os
 from pathlib import Path
-from PyPDF2 import PdfFileMerger
+from PyPDF2 import PdfMerger
 import progressbar
 
 
@@ -62,7 +62,7 @@ ordered_files = sorted(os.listdir(path_folder),
                        key=lambda x: (int(re.sub('\D', '', x)), x))
 
 pdf_list = [path_folder + a for a in ordered_files if a.endswith(".pdf")]
-merger = PdfFileMerger()
+merger = PdfMerger()
 
 for pdf in pdf_list:
     merger.append(open(pdf, 'rb'))
