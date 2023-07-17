@@ -154,7 +154,7 @@ def main():
 def download_link(args, link, output):
     start_time = time.time()
     if "babel.hathitrust.org" in link:
-        id_book = re.findall(r'id=(\w*\.\d*)|$', link)[0]
+        id_book = re.findall(r'id=(\w*\.\w*)|$', link)[0]
     elif "hdl.handle.net" in link:
         link.rstrip('/')
         id_book = re.findall(r'.+/(.+)', link)[0]
