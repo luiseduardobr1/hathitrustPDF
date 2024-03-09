@@ -1,3 +1,5 @@
+# This is currently **broken**. Hathi Trust has changed its page structure and now uses blob urls to store the images, and I don't have the time to rewrite this to accommodate for that. It's likely still possible, using selenium to request the page and pull it from there, but I'm not familiar enough with selenium or blob urls as a whole to do it. If someone else wants to make a pull request, feel free.
+
 # Hathi Trust Digital Library - Complete PDF Download
 Download an entire book (or publication) in PDF from Hathi Trust Digital Library without "partner login" requirement.
 
