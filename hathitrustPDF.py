@@ -10,6 +10,7 @@ import progressbar
 import requests
 from PyPDF2 import PdfMerger
 from bs4 import BeautifulSoup
+import re
 
 
 class Downloader:
@@ -146,6 +147,8 @@ def main():
         with open(args.input_file, 'r') as f:
             links = dict(map(lambda x: x.split(','), f.readlines()))
     else:
+        if args.output_path is None:
+            args.output_path = "book.pdf"
         links = {args.link: args.output_path}
     for link, output in links.items():
         download_link(args, link, output.rstrip('\n'))
@@ -165,7 +168,15 @@ def download_link(args, link, output):
     soup = BeautifulSoup(r.text, "html.parser")
 
     # Number of the book pages and name
-    pages_book = int(soup.find("section", {'class': 'd--reader--viewer'})['data-total-seq'])
+
+    regex = r'HT.params.totalSeq = (\d+)'  # https://stackoverflow.com/a/1732454 :)
+    with open("out.html","w") as f:
+        f.write(r.text)
+    match: re.Match = re.search(regex, r.text)
+    if match is None:
+        print("Failed to find page count.")
+        return
+    pages_book = int(match.group(1))
     name_book = soup.find('meta', {'property': 'og:title'})['content']
 
     # Limit book title
@@ -191,9 +202,9 @@ def download_link(args, link, output):
                                   widgets=[progressbar.Bar('=', '[', ']'), ' ',
                                            progressbar.Percentage()])
     bar.start()
+
     base_link = 'https://babel.hathitrust.org/cgi/imgsrv/download/pdf?id={};orient=0;size=100;seq={};attachment=0'
     links = [base_link.format(id_book, actual_page) for actual_page in range(begin_page, last_page)]
-
     downloader = Downloader(max_threads=args.thread_count, to_download=links, bar_=bar,
                             path=path_folder, args=args)
     downloader.download()
