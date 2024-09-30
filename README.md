@@ -4,35 +4,50 @@ Download an entire book (or publication) in PDF from Hathi Trust Digital Library
 # Motivation
 Hathi Trust Digital Library is a good site to find old publications digitized from different university libraries. However, it limits the download of full PDF files to only partner universities, which are mostly american. In this sense, this code attempts to democratize knowledge and permits to download complete public domain works in PDF from Hathi Trust website.
 
+# Features
+- Multi-threaded download of PDF pages and merge in a single file.
+- Smart download of pages, skipping already downloaded pages.
+- Supports the two most common link formats:
+  - https://babel.hathitrust.org/cgi/pt?id={bookID}
+  - https://hdl.handle.net/XXXX/{bookID}
+- Book splicing, allowing to download only a part of the book.
+- Bulk download of multiple books.
+- Attempts to avoid Error 429 (Too Many Requests) from Hathi Trust.
+  - If the error occurs, the thread will sleep for 5 seconds and try again.
+  - Works in most cases, but not always.
+- Downloads are attempted 3 times before giving up.
+  - Users are notified of the failure, and have the option to redownload the missing pages for merge at the end.
+  - Retry attempt count is configurable via --retries option.
+
 # Requirements
 * [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/#installing-beautiful-soup) (bs4)
 * [Requests](https://realpython.com/python-requests/)
 * [PyPDF2](https://pythonhosted.org/PyPDF2/)
 * [Progressbar](https://pypi.org/project/progressbar/)
 
-# How to use it
-Copy Hathi Trust book URL and paste into "link" variable on code line:
-```python
-...
-link = "https://babel.hathitrust.org/cgi/pt?id=mdp.39015023320164"
-r  = requests.get(link)
-...
+# Usage
+
 ```
-OBS: Keep the same pattern presented (**numbers at the end**)! 
+usage: hathitrustPDF.py [-h] [-l LINK] [-i INPUT_FILE] [-t THREAD_COUNT] [-r RETRIES] [-b BEGIN] [-e END] [-k]
+                        [-o OUTPUT_PATH] [-v] [-V]
 
-After that, all pages will be downloaded as PDF files and merged in a single file named ```BOOKNAME_output.pdf``` in the corresponding folder. The individual pages are not deleted after the end of the process! 
+PDF Downloader and Merger
 
-# Slice pages
-The code also allows you to remove only a range of pages. For that purpose, just edit the start and end page on code line:
-```python
-...
-# Download pdf file
-begin_page=1
-last_page=pages_book+1
-
-for actual_page in range(begin_page, last_page):
-...
+options:
+  -h, --help            show this help message and exit
+  -l LINK, --link LINK  HathiTrust book link
+  -i INPUT_FILE, --input-file INPUT_FILE
+                        File with list of links formatted as link,output_path
+  -t THREAD_COUNT, --thread-count THREAD_COUNT
+                        Number of download threads
+  -r RETRIES, --retries RETRIES
+                        Number of retries for failed downloads
+  -b BEGIN, --begin BEGIN
+                        First page to download
+  -e END, --end END     Last page to download
+  -k, --keep            Keep downloaded pages
+  -o OUTPUT_PATH, --output-path OUTPUT_PATH
+                        Output file path
+  -v, --verbose         Enable verbose mode
+  -V, --version         show program's version number and exit
 ```
-
-# Screenshot
-![captura-hait](https://user-images.githubusercontent.com/56649205/72007547-abc73680-3230-11ea-9e74-4e6e495c90d2.PNG)

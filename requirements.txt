@@ -1,0 +1,4 @@
+beautifulsoup4
+progressbar
+PyPDF2
+requests
